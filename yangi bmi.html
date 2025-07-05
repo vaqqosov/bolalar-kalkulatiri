@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bola O'sishi Kalkulyatori</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .result, .advice {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .advice {
+      background: #e9f7ef;
+      padding: 10px;
+      border-left: 5px solid #28a745;
+    }
+    canvas {
+      margin-top: 30px;
+      background: #fff;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>Bolaning O'sish Kalkulyatori / Боланинг Ўсиш Калкулятори</h2><label for="lang">Til / Тил:</label> <select id="lang" onchange="updateLanguage()"> <option value="lotin">Lotin</option> <option value="kirill">Кирилл</option> </select>
+
+<label for="gender">Jinsi / Жинси:</label> <select id="gender"> <option value="male">O‘g‘il / Ўғил</option> <option value="female">Qiz / Қиз</option> </select>
+
+<label for="age">Yosh (oyda) / Ёш (ойда):</label> <input type="number" id="age" min="0" max="60">
+
+<label for="weight">Og'irlik (kg) / Оғирлик (кг):</label> <input type="number" id="weight" step="0.1">
+
+<label for="height">Bo'yi (sm) / Бўйи (см):</label> <input type="number" id="height">
+
+<button onclick="calculateGrowth()">Hisoblash / Ҳисоблаш</button>
+
+  <div class="result" id="result"></div>
+  <div class="advice" id="advice"></div><canvas id="chart" width="600" height="300"></canvas>
+
+  <p style="margin-top: 30px; font-size: 14px;">
+    Savollar uchun: <strong><a href="https://t.me/sv_medical" target="_blank">@sv_medical</a></strong>
+  </p>  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <script>
+    const avgGrowth = {
+      male: {
+        0: { weight: 3.3, height: 50 },
+        1: { weight: 4.5, height: 54 },
+        3: { weight: 6.0, height: 60 },
+        6: { weight: 7.9, height: 66 },
+        9: { weight: 8.6, height: 70 },
+        12: { weight: 9.6, height: 75 },
+        24: { weight: 12.3, height: 87 },
+        36: { weight: 14.2, height: 96 },
+        48: { weight: 16.0, height: 103 },
+        60: { weight: 18.0, height: 110 }
+      },
+      female: {
+        0: { weight: 3.2, height: 49 },
+        1: { weight: 4.2, height: 53 },
+        3: { weight: 5.8, height: 59 },
+        6: { weight: 7.3, height: 65 },
+        9: { weight: 8.2, height: 69 },
+        12: { weight: 9.1, height: 74 },
+        24: { weight: 11.8, height: 86 },
+        36: { weight: 13.9, height: 95 },
+        48: { weight: 15.7, height: 102 },
+        60: { weight: 17.5, height: 109 }
+      }
+    };
+
+    let currentLang = "lotin";
+
+    function updateLanguage() {
+      currentLang = document.getElementById("lang").value;
+      calculateGrowth();
+    }
+
+    function calculateGrowth() {
+      const age = parseInt(document.getElementById("age").value);
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value);
+      const gender = document.getElementById("gender").value;
+      const result = document.getElementById("result");
+      const advice = document.getElementById("advice");
+
+      if (isNaN(age)  isNaN(weight)  isNaN(height)) {
+        result.textContent = currentLang === "lotin" ? "Iltimos, barcha maydonlarni to‘ldiring." : "Илтимос, барча майдонларни тўлдиринг.";
+        advice.textContent = "";
+        return;
+      }
+
+Telegram (https://t.me/sv_medical)
+const data = avgGrowth[gender];
+      const nearestAge = Object.keys(data).reduce((prev, curr) => Math.abs(curr - age) < Math.abs(prev - age) ? curr : prev);
+      const norm = data[nearestAge];
+
+      let weightStatus = weight > norm.weight + 1 ? (currentLang === "lotin" ? "Og‘irroq" : "Оғирроқ") : (weight < norm.weight - 1 ? (currentLang === "lotin" ? "Yengil" : "Енгил") : (currentLang === "lotin" ? "Me’yorda" : "Меъёрда"));
+      let heightStatus = height > norm.height + 2 ? (currentLang === "lotin" ? "Uzunroq" : "Узунроқ") : (height < norm.height - 2 ? (currentLang === "lotin" ? "Qisqaroq" : "Қисқароқ") : (currentLang === "lotin" ? "Me’yorda" : "Меъёрда"));
+
+      result.innerHTML = 
+        ${currentLang === "lotin" ? "Yosh" : "Ёш"}: ${age} ${currentLang === "lotin" ? "oy" : "ой"}<br>
+        ${currentLang === "lotin" ? "Og‘irlik holati" : "Оғирлик ҳолати"}: <b>${weightStatus}</b> (${currentLang === "lotin" ? "O‘rtacha" : "Ўртача"}: ${norm.weight} kg)<br>
+        ${currentLang === "lotin" ? "Bo‘y holati" : "Бўй ҳолати"}: <b>${heightStatus}</b> (${currentLang === "lotin" ? "O‘rtacha" : "Ўртача"}: ${norm.height} sm)
+      ;
+
+      let adviceText = "";
+      if (weightStatus.includes("Og‘irroq") || weightStatus.includes("Оғирроқ")) {
+        adviceText += currentLang === "lotin" ? "⚠️ Bola me’yordan og‘irroq. Sog‘lom ovqatlanishga rioya qiling." : "⚠️ Бола меъёрдан оғирроқ. Соғлом овқатланишга риоя қилинг.";
+      }
+      if (weightStatus.includes("Yengil") || weightStatus.includes("Енгил")) {
+        adviceText += currentLang === "lotin" ? " ⚠️ Bola ozg‘in. Vitaminlar va parhezga e’tibor bering." : " ⚠️ Бола озғин. Витаминлар ва парҳезга эътибор беринг.";
+      }
+      if (heightStatus.includes("Qisqaroq") || heightStatus.includes("Қисқароқ")) {
+        adviceText += currentLang === "lotin" ? " ⚠️ Bo‘y qisqa. D vitamini va quyoshga chiqish foydali." : " ⚠️ Бўй қисқа. D витамини ва қуёшга чиқиш фойдали.";
+      }
+
+      advice.innerHTML = adviceText;
+
+      const chart = new Chart(document.getElementById('chart'), {
+        type: 'line',
+        data: {
+          labels: Object.keys(data),
+          datasets: [
+            {
+              label: currentLang === "lotin" ? "O‘rtacha bo‘y" : "Ўртача бўй",
+              data: Object.values(data).map(d => d.height),
+              borderColor: 'blue',
+              fill: false
+            },
+            {
+              label: currentLang === "lotin" ? "O‘rtacha vazn" : "Ўртача вазн",
+              data: Object.values(data).map(d => d.weight * 5),
+              borderColor: 'green',
+              fill: false
+            },
+            {
+              label: currentLang === "lotin" ? "Farzandingiz" : "Фарзандингиз",
+              data: Array(Object.keys(data).length).fill(null).map((_, i) => parseInt(Object.keys(data)[i]) === nearestAge ? height : null),
+              borderColor: 'red',
+              pointRadius: 6,
+              pointBackgroundColor: 'red',
+              fill: false
+            }
+          ]
+        }
+      });
+    }
+  </script></body>
+</html>
