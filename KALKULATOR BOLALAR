@@ -1,0 +1,161 @@
+Vaqqosov Saydulloxõja, [05/07/2025 20:29]
+<!DOCTYPE html><html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bola o'sish va vazn kalkulyatori</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #fff);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 650px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #00796b;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #333;
+    }
+    input,
+    select,
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+    button {
+      background-color: #00796b;
+      color: white;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #004d40;
+    }
+    .result {
+      margin-top: 25px;
+      font-size: 1.1em;
+      color: #333;
+    }
+    canvas {
+      margin-top: 25px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Bola o'sish va vazn kalkulyatori</h2>
+    <label>Tilni tanlang / Выберите язык:</label>
+    <select id="lang">
+      <option value="uz">O'zbekcha</option>
+      <option value="ru">Русский</option>
+    </select><label id="ageLabel">Yosh (oyda):</label>
+<input type="number" id="age" min="0" max="60" />
+
+<label id="weightLabel">Vazn (kg):</label>
+<input type="number" id="weight" step="0.1" />
+
+<label id="heightLabel">Bo'y (sm):</label>
+<input type="number" id="height" step="0.1" />
+
+<label id="genderLabel">Jins:</label>
+<select id="gender">
+  <option value="male">O'g'il bola / Мальчик</option>
+  <option value="female">Qiz bola / Девочка</option>
+</select>
+
+<button onclick="calculate()">Hisoblash / Рассчитать</button>
+
+<div class="result" id="result"></div>
+<canvas id="chart" width="400" height="200"></canvas>
+
+  </div>  <script>
+    const messages = {
+      uz: {
+        ageLabel: "Yosh (oyda):",
+        weightLabel: "Vazn (kg):",
+        heightLabel: "Bo'y (sm):",
+        genderLabel: "Jins:",
+        underweight: "Vazn me'yordan past.",
+        normal: "Vazn me'yorda.",
+        overweight: "Vazn me'yordan yuqori.",
+        contact: "Qo'shimcha savollar uchun: @sv_medical"
+      },
+      ru: {
+        ageLabel: "Возраст (в месяцах):",
+        weightLabel: "Вес (кг):",
+        heightLabel: "Рост (см):",
+        genderLabel: "Пол:",
+        underweight: "Вес ниже нормы.",
+        normal: "Вес в пределах нормы.",
+        overweight: "Вес выше нормы.",
+        contact: "По вопросам: @sv_medical"
+      }
+    };
+
+    document.getElementById("lang").addEventListener("change", function () {
+      const lang = this.value;
+      document.getElementById("ageLabel").innerText = messages[lang].ageLabel;
+      document.getElementById("weightLabel").innerText = messages[lang].weightLabel;
+      document.getElementById("heightLabel").innerText = messages[lang].heightLabel;
+      document.getElementById("genderLabel").innerText = messages[lang].genderLabel;
+    });
+
+    function calculate() {
+      const lang = document.getElementById("lang").value;
+      const age = parseInt(document.getElementById("age").value);
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value);
+      const gender = document.getElementById("gender").value;
+
+      if (isNaN(age)  isNaN(weight)  isNaN(height)) {
+        alert("Iltimos, barcha maydonlarni to'ldiring.");
+        return;
+      }
+
+      let normWeight = 3 + age * 0.5;
+      let status = "";
+      if (weight < normWeight * 0.9) status = messages[lang].underweight;
+      else if (weight > normWeight * 1.1) status = messages[lang].overweight;
+      else status = messages[lang].normal;
+
+Vaqqosov Saydulloxõja, [05/07/2025 20:29]
+document.getElementById("result").innerHTML =
+        <b>${status}</b><br>${messages[lang].contact};
+
+      const ctx = document.getElementById("chart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Norma", "Bola vazni"],
+          datasets: [{
+            label: "Vazn taqqoslash",
+            data: [normWeight.toFixed(1), weight],
+            backgroundColor: ["#81c784", "#4fc3f7"]
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+  </script></body>
+</html>
